@@ -1,0 +1,83 @@
+{
+  "uid": "server-monitoring",
+  "title": "server_monitoring",
+  "description": "1.78의 3306은 현재 MariaDB가 아닌 MySQL이므로 MariaDB 상태는 DOWN으로 표시됩니다. 포트 상태는 192.168.1.76 TCP 접속 기준입니다.",
+  "tags": ["SRGH_IT", "server"],
+  "timezone": "browser",
+  "schemaVersion": 41,
+  "version": 22,
+  "refresh": "15s",
+  "time": {"from": "now-1h", "to": "now"},
+  "panels": [
+    {
+      "id": 1, "type": "timeseries", "title": "1.77 / 1.78 / 1.249 서버 상태", "description": "선은 각 서버의 메모리 가용률(%)입니다. 서버 생존 상태는 별도 알림으로 감시합니다.", "gridPos": {"x": 0, "y": 0, "w": 12, "h": 8},
+      "datasource": {"type": "prometheus", "uid": "srghtalk-prometheus"},
+      "targets": [{"refId": "A", "expr": "srgh_node_memory_available_percent{node=~\"1.77|1.78|1.249\"}", "legendFormat": "{{node}}", "instant": false, "range": true}],
+      "fieldConfig": {"defaults": {"unit": "percent", "min": 0, "max": 100, "decimals": 1, "color": {"mode": "palette-classic"}, "custom": {"drawStyle": "line", "lineInterpolation": "linear", "lineWidth": 2, "fillOpacity": 5, "showPoints": "auto", "spanNulls": false}}, "overrides": []},
+      "options": {"legend": {"displayMode": "table", "placement": "bottom", "showLegend": true}, "tooltip": {"mode": "multi"}}
+    },
+    {
+      "id": 2, "type": "timeseries", "title": "DB 현재 프라이머리 (3307 / 3308 / 5432 / 5433)", "description": "각 포트의 현재 프라이머리 프로세스만 표시합니다. 선은 호스트 RAM 대비 메모리 사용률(%)이며, 범례의 서버 번호는 승격에 따라 바뀝니다. 레플리카 상태는 아래 DB 상태 그래프에서 확인할 수 있습니다.", "gridPos": {"x": 12, "y": 0, "w": 12, "h": 8},
+      "datasource": {"type": "prometheus", "uid": "srghtalk-prometheus"},
+      "targets": [{"refId": "A", "expr": "srgh_db_process_memory_usage_percent{engine=~\"mysql|postgresql\",port=~\"3307|3308|5432|5433\"} * on (node,engine,port) (srgh_db_primary{engine=~\"mysql|postgresql\",port=~\"3307|3308|5432|5433\"} == 1)", "legendFormat": "{{engine}} {{port}} · {{node}} 프라이머리", "instant": false, "range": true}],
+      "fieldConfig": {"defaults": {"unit": "percent", "min": 0, "decimals": 2, "color": {"mode": "palette-classic"}, "custom": {"drawStyle": "line", "lineInterpolation": "linear", "lineWidth": 2, "fillOpacity": 5, "showPoints": "auto", "spanNulls": false}}, "overrides": []},
+      "options": {"legend": {"displayMode": "table", "placement": "bottom", "showLegend": true}, "tooltip": {"mode": "multi"}}
+    },
+    {
+      "id": 3, "type": "stat", "title": "1.76 포트 3000~3019 TCP 상태", "description": "포트별 192.168.1.76 TCP 접속 상태입니다. 3015는 Gitea, 3019는 notion입니다.", "gridPos": {"x": 0, "y": 8, "w": 24, "h": 6},
+      "datasource": {"type": "prometheus", "uid": "srghtalk-prometheus"},
+      "targets": [{"refId": "A", "expr": "max by (port) (srgh_vip_port_up{port=~\"30(0[0-9]|1[0-9])\"})", "legendFormat": "{{port}}", "instant": false, "range": true}],
+      "fieldConfig": {"defaults": {"noValue": "데이터 없음", "mappings": [{"type": "value", "options": {"0": {"text": "DOWN", "color": "red"}, "1": {"text": "UP", "color": "green"}}}], "thresholds": {"mode": "absolute", "steps": [{"color": "red", "value": null}, {"color": "green", "value": 1}]}}, "overrides": [
+        {"matcher": {"id": "byName", "options": "3000"}, "properties": [{"id": "displayName", "value": "3000 업무 관리"}]},
+        {"matcher": {"id": "byName", "options": "3001"}, "properties": [{"id": "displayName", "value": "3001 자산 관리"}]},
+        {"matcher": {"id": "byName", "options": "3002"}, "properties": [{"id": "displayName", "value": "3002 RAD"}]},
+        {"matcher": {"id": "byName", "options": "3003"}, "properties": [{"id": "displayName", "value": "3003 QPS"}]},
+        {"matcher": {"id": "byName", "options": "3004"}, "properties": [{"id": "displayName", "value": "3004 인사 관리"}]},
+        {"matcher": {"id": "byName", "options": "3005"}, "properties": [{"id": "displayName", "value": "3005 연혁"}]},
+        {"matcher": {"id": "byName", "options": "3006"}, "properties": [{"id": "displayName", "value": "3006 관리대장"}]},
+        {"matcher": {"id": "byName", "options": "3007"}, "properties": [{"id": "displayName", "value": "3007 업무일지"}]},
+        {"matcher": {"id": "byName", "options": "3008"}, "properties": [{"id": "displayName", "value": "3008 메인페이지"}]},
+        {"matcher": {"id": "byName", "options": "3009"}, "properties": [{"id": "displayName", "value": "3009 Orchestrator"}]},
+        {"matcher": {"id": "byName", "options": "3010"}, "properties": [{"id": "displayName", "value": "3010 공지"}]},
+        {"matcher": {"id": "byName", "options": "3011"}, "properties": [{"id": "displayName", "value": "3011 계정 리스트"}]},
+        {"matcher": {"id": "byName", "options": "3012"}, "properties": [{"id": "displayName", "value": "3012 IP 관리"}]},
+        {"matcher": {"id": "byName", "options": "3013"}, "properties": [{"id": "displayName", "value": "3013 통합관리"}]},
+        {"matcher": {"id": "byName", "options": "3014"}, "properties": [{"id": "displayName", "value": "3014 내선번호"}]},
+        {"matcher": {"id": "byName", "options": "3015"}, "properties": [{"id": "displayName", "value": "3015 Gitea"}, {"id": "mappings", "value": [{"type": "value", "options": {"0": {"text": "DOWN", "color": "red"}, "1": {"text": "UP", "color": "green"}}}]}]},
+        {"matcher": {"id": "byName", "options": "3016"}, "properties": [{"id": "displayName", "value": "3016 서버 리스트"}]},
+        {"matcher": {"id": "byName", "options": "3017"}, "properties": [{"id": "displayName", "value": "3017 외부업체"}]},
+        {"matcher": {"id": "byName", "options": "3018"}, "properties": [{"id": "displayName", "value": "3018 임대"}]},
+        {"matcher": {"id": "byName", "options": "3019"}, "properties": [{"id": "displayName", "value": "3019 notion"}]}
+      ]},
+      "options": {"colorMode": "background", "graphMode": "none", "orientation": "auto", "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false}, "textMode": "value_and_name", "wideLayout": false}
+    },
+    {
+      "id": 4, "type": "timeseries", "title": "호스트 CPU 사용률", "gridPos": {"x": 0, "y": 14, "w": 12, "h": 8},
+      "datasource": {"type": "prometheus", "uid": "srghtalk-prometheus"},
+      "targets": [{"refId": "A", "expr": "srgh_node_cpu_usage_percent", "legendFormat": "{{node}}"}],
+      "fieldConfig": {"defaults": {"unit": "percent", "min": 0, "max": 100}, "overrides": []},
+      "options": {"legend": {"displayMode": "table", "placement": "bottom", "showLegend": true}}
+    },
+    {
+      "id": 5, "type": "timeseries", "title": "MySQL / MariaDB / PostgreSQL 상태", "description": "선은 각 DB의 호스트 RAM 대비 메모리 사용률(%)입니다. PostgreSQL 5432와 5433은 각각의 Patroni 서비스 메모리를 포함합니다.", "gridPos": {"x": 12, "y": 14, "w": 12, "h": 8},
+      "datasource": {"type": "prometheus", "uid": "srghtalk-prometheus"},
+      "targets": [{"refId": "A", "expr": "srgh_db_process_memory_usage_percent", "legendFormat": "{{node}} {{engine}}:{{port}}", "instant": false, "range": true}],
+      "fieldConfig": {"defaults": {"unit": "percent", "min": 0, "decimals": 2, "color": {"mode": "palette-classic"}, "custom": {"drawStyle": "line", "lineInterpolation": "linear", "lineWidth": 2, "fillOpacity": 5, "showPoints": "auto", "spanNulls": false}}, "overrides": []},
+      "options": {"legend": {"displayMode": "table", "placement": "bottom", "showLegend": true}, "tooltip": {"mode": "multi"}}
+    },
+    {
+      "id": 6, "type": "timeseries", "title": "DB 현재 연결 / 최대 연결", "gridPos": {"x": 0, "y": 22, "w": 12, "h": 8},
+      "datasource": {"type": "prometheus", "uid": "srghtalk-prometheus"},
+      "targets": [{"refId": "A", "expr": "srgh_db_connections", "legendFormat": "{{node}} {{engine}}:{{port}} 현재"}, {"refId": "B", "expr": "srgh_db_max_connections", "legendFormat": "{{node}} {{engine}}:{{port}} 최대"}, {"refId": "C", "expr": "srgh_db_max_used_connections", "legendFormat": "{{node}} {{engine}}:{{port}} 최고 사용 이력"}],
+      "fieldConfig": {"defaults": {"unit": "short", "min": 0}, "overrides": []},
+      "options": {"legend": {"displayMode": "table", "placement": "bottom", "showLegend": true}}
+    },
+    {
+      "id": 7, "type": "timeseries", "title": "DB 연결 사용률", "gridPos": {"x": 12, "y": 22, "w": 12, "h": 8},
+      "datasource": {"type": "prometheus", "uid": "srghtalk-prometheus"},
+      "targets": [{"refId": "A", "expr": "100 * srgh_db_connections / srgh_db_max_connections", "legendFormat": "{{node}} {{engine}}:{{port}}"}],
+      "fieldConfig": {"defaults": {"unit": "percent", "min": 0, "max": 100, "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}, {"color": "orange", "value": 70}, {"color": "red", "value": 90}]}}, "overrides": []},
+      "options": {"legend": {"displayMode": "table", "placement": "bottom", "showLegend": true}}
+    }
+  ]
+}

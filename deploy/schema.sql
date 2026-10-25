@@ -1,0 +1,36 @@
+CREATE DATABASE IF NOT EXISTS srghnotion CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+USE srghnotion;
+
+CREATE TABLE IF NOT EXISTS documents (
+  id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  parent_id BIGINT NULL,
+  title VARCHAR(200) NOT NULL DEFAULT '제목 없음',
+  content_json LONGTEXT NOT NULL,
+  version BIGINT NOT NULL DEFAULT 0,
+  created_by VARCHAR(100) NOT NULL,
+  updated_by VARCHAR(100) NOT NULL,
+  created_at DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+  updated_at DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
+  deleted_at DATETIME(3) NULL,
+  INDEX idx_documents_parent (parent_id, deleted_at),
+  INDEX idx_documents_updated (updated_at)
+) ENGINE=InnoDB;
+CREATE TABLE IF NOT EXISTS attachments (
+  id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  document_id BIGINT NOT NULL,
+  file_name VARCHAR(255) NOT NULL,
+  content_type VARCHAR(120) NOT NULL,
+  size_bytes BIGINT NOT NULL,
+  data LONGBLOB NOT NULL,
+  created_by VARCHAR(100) NOT NULL,
+  created_at DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+  INDEX idx_attachments_document (document_id)
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS change_events (
+  id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  document_id BIGINT NOT NULL,
+  change_type VARCHAR(20) NOT NULL,
+  changed_by VARCHAR(100) NOT NULL,
+  changed_at DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3)
+) ENGINE=InnoDB;

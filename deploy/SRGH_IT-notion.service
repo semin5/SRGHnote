@@ -1,0 +1,19 @@
+[Unit]
+Description=SRGH IT Notion Workspace (Spring Boot)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=sarangit
+Group=sarangit
+WorkingDirectory=/opt/SRGH_IT/notion
+Environment=PORT=3019
+EnvironmentFile=/etc/SRGH_IT/notion.env
+ExecStart=/usr/bin/java -Xms128m -Xmx512m -jar /opt/SRGH_IT/notion/notion.jar
+Restart=always
+RestartSec=5
+TimeoutStopSec=30
+
+[Install]
+WantedBy=multi-user.target

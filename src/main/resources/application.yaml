@@ -1,0 +1,29 @@
+spring:
+  application:
+    name: notion
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://192.168.1.76:5432/srghnotion}
+    username: ${DB_USERNAME:semin5}
+    password: ${DB_PASSWORD}
+    hikari:
+      maximum-pool-size: 5
+      minimum-idle: 0
+      connection-timeout: 5000
+      validation-timeout: 3000
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 51MB
+  web:
+    resources:
+      cache:
+        period: 0s
+server:
+  port: ${PORT:3019}
+  servlet:
+    context-path: /note
+  forward-headers-strategy: framework
+app:
+  portal-me-url: ${PORTAL_ME_URL:http://127.0.0.1:13013/it/api/auth/me}
+  attachments-root: ${ATTACHMENTS_ROOT:/mnt/sarangit/srgh/note}
+  attachments-required-mount: ${ATTACHMENTS_REQUIRED_MOUNT:/mnt/sarangit}
